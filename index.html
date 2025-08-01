@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pre-Ticket Validator Tool</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      margin: 0;
+      padding: 40px;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+      color: #34495e;
+    }
+
+    select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #2980b9;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: block;
+      margin: auto;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1c5980;
+    }
+
+    #output {
+      background: #ecf0f1;
+      border-left: 5px solid #2980b9;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🎫 Pre-Ticket Validator Tool</h2>
+
+    <label>📌 Choose Application:</label>
+    <select id="appName">
+      <option value="">--Select--</option>
+      <option value="pao">PAO</option>
+      <option value="nikeApp">Nike App</option>
+      <option value="sapBilling">SAP Billing</option>
+    </select>
+
+    <label>📝 Enter Description:</label>
+    <textarea id="desc" rows="4" placeholder="Describe your issue or request here..."></textarea>
+
+    <button onclick="getFields()">🚀 Get Mandatory Fields</button>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    async function getFields() {
+      const app = document.getElementById("appName").value;
+      const description = document.getElementById("desc").value;
+
+      const res = await fetch("http://localhost:8080/api/mandatory-fields", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ application: app, description })
+      });
+
+      const data = await res.json();
+      const out = document.getElementById("output");
+
+      if (data.fields) {
+        out.innerHTML = "<strong>✅ Mandatory Fields:</strong><ul>" + data.fields.map(f => `<li>${f}</li>`).join('') + "</ul>";
+      } else {
+        out.innerHTML = "<strong>❌ Error:</strong> " + data.error;
+      }
+    }
+  </script>
+</body>
+</html>
