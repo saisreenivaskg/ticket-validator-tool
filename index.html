@@ -2,299 +2,344 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>E-commerce Support Ticket Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ticket Description Helper - Necessary Fields</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f7f9;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 48px auto;
-      background-color: #fff;
-      padding: 24px 30px;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.12);
-      border-radius: 8px;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 24px;
-      color: #222;
-    }
-    label {
-      display: block;
-      margin: 14px 0 6px;
-      color: #444;
-      font-weight: bold;
-    }
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-      font-size: 15px;
-      resize: vertical;
-    }
-    textarea {
-      min-height: 80px;
-    }
-    button {
-      margin-top: 20px;
-      padding: 12px;
-      width: 100%;
-      font-size: 16px;
-      font-weight: bold;
-      background-color: #0066cc;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.25s ease;
-    }
-    button:hover {
-      background-color: #004999;
-    }
-    .output {
-      margin-top: 30px;
-      padding: 18px 24px;
-      border: 1px solid #aaa;
-      border-radius: 7px;
-      background-color: #fefefe;
-      color: #222;
-      min-height: 120px;
-      white-space: pre-wrap;
-      font-size: 15px;
-      line-height: 1.4;
-    }
-    .output strong {
-      display: block;
-      margin-bottom: 8px;
-      color: #004999;
-    }
-    ul {
-      padding-left: 18px;
-    }
-    li {
-      margin-bottom: 6px;
-    }
+    body { background: #f7faff; min-height: 100vh; margin:0; font-family:sans-serif; color:#263159;}
+    .container { max-width: 900px; margin:48px auto 0; background:#fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(27,52,96,0.15); padding:43px 46px 40px;}
+    h1 { text-align:center; font-size:2.3em; letter-spacing:.03em; 
+         background:linear-gradient(90deg,#386ef6 35%,#0ebeac 85%); color:transparent;
+         background-clip:text; -webkit-background-clip:text; font-weight:800; margin:0 0 30px 0;}
+    label { display:block; font-weight:600; margin-top:23px; margin-bottom:7px; color:#284c93;}
+    select, textarea, input[type='file'] { width:100%; font-size:1em; padding:13px 14px; border:2px solid #b6d3ff;
+      border-radius:8px; background: #fafdff; margin-bottom:5px; box-sizing:border-box; color:#16253b;}
+    select:focus, textarea:focus, input[type="file"]:focus { box-shadow:0 0 10px 2px #99cef7; border-color:#386ef6;}
+    textarea { min-height: 88px; resize: vertical;}
+    button { padding:14px; margin-top:18px; width:100%; background:linear-gradient(90deg,#24c7b6 20%,#386ef6 90%); color:#fff; font-size:1.12em;font-weight:600;border:none; border-radius:8px; cursor:pointer; letter-spacing:.02em; transition:background 0.2s;}
+    button:disabled { background:#cadcfc; color: #888; cursor:not-allowed;}
+    .mandatory-list { margin:15px 0 0 0; background:#fafdff; border-radius:9px; border:1.5px solid #dbeafc; padding:17px 18px 8px;}
+    .field-checkbox { display:flex; align-items:center; margin-bottom:2.5px; cursor:pointer; border-radius:5px; padding-left: 2px;}
+    .field-checkbox input[type="checkbox"] { accent-color: #12d8a7; margin-right:11px; width:18px; height:18px;}
+    .field-checkbox label { font-weight:500; color: #293368; font-size:1em; margin:0; cursor:pointer;}
+    #attachment-section { margin-top:12px; padding:13px 15px 13px 17px; background:linear-gradient(99deg,#e7fffc 60%,#eaf0ff 150%);
+      color:#147655; border-radius:7px; border:1.2px solid #51e0ce33; display:none; font-weight:500;}
+    .missing { color:#e33e36; font-weight:600;}
+    .invalid { background: #fff3f2 !important;}
+    .info { background:#eaf2ff; padding:10px 17px; border-radius:7px; margin:12px 0; white-space: pre-line; }
+    .mandatory-list h4 { margin:8px 0 6px 0;}
+    .error { color:#fb354a; font-weight:bold; margin-top:9px; display:block;}
+    .success { color:#22be77; font-weight:bold; margin-top:9px; }
+    .critical { border-left:4px solid #ef3030; padding-left:13px; background:#fff6f3;}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Ticket Description Helper Tool</h1>
+  <div class="container" role="main">
+    <h1>E-commerce Support Ticket Portal</h1>
 
-    <label for="application-select">Select Application:</label>
-    <select id="application-select" aria-label="Select Application">
-      <option value="">-- Select Application --</option>
-      <option value="paoProd">Prepare Account Offering (PAO) Prod</option>
-      <option value="atOnce">E-Commerce Order - At Once</option>
-      <option value="futuresWeb">E-Commerce Order - Futures Web</option>
-      <option value="manageApla">E-Commerce Manage - Order Status (APLA/EMEA)</option>
-      <option value="manageNa">E-Commerce Manage - Order Status (NA/GC)</option>
+    <label for="app-select">Select Application</label>
+    <select id="app-select" aria-describedby="app-desc" aria-required="true">
+      <option value="">-- Select an Application --</option>
+      <option value="order">Order Booking</option>
+      <option value="invoice">Invoice</option>
+      <option value="store">Store Management</option>
+      <option value="inventory">Inventory</option>
+      <option value="delivery">Delivery</option>
+      <option value="returns">Returns</option>
+      <option value="payment">Payment</option>
+      <option value="catalog">Product Catalog</option>
+      <option value="support">Customer Support</option>
+      <option value="analytics">Analytics</option>
+      <option value="loyalty">Loyalty</option>
     </select>
 
-    <label for="description-input">Enter Short Description:</label>
-    <textarea id="description-input" placeholder="Type your ticket description here..." aria-label="Ticket Description"></textarea>
+    <div id="app-desc" class="info" style="display:none;"></div>
 
-    <button id="suggest-btn">Suggest Necessary Fields</button>
+    <label for="short-desc">Short Description</label>
+    <textarea id="short-desc" placeholder="e.g.: Order not showing up, invoice download failed..."></textarea>
+    <button type="button" id="btn-suggest">Suggest Mandatory Fields</button>
 
-    <div id="output" class="output" role="region" aria-live="polite"></div>
+    <form id="long-form" novalidate autocomplete="off">
+      <div id="mandatory-fields" class="mandatory-list" tabindex="0"></div>
+      <div id="attachment-section">
+        <label><strong>Screenshot / Attachment (optional):</strong></label>
+        <input type="file" id="attachment-upload" multiple accept="image/*,.pdf,.doc,.docx,.txt" />
+      </div>
+      <label for="expanded-description">Detailed Description (optional)</label>
+      <textarea id="expanded-description" placeholder="Add details as you wish..."></textarea>
+      <button type="submit" id="submit-btn">Submit Ticket</button>
+      <span id="form-status"></span>
+    </form>
   </div>
 
-  <script>
-    // Full mandatory fields per app as baseline
-    const baselineFields = {
-      paoProd: [
-        "Short Description",
-        "User Email/Username",
-        "Sold-To Code",
-        "Season",
-        "Country/Region",
-        "Product Codes",
-        "Business Justification",
-        "Error Message (if any)",
-        "Screenshot/Attachment (optional but recommended)"
-      ],
-      atOnce: [
-        "Short Description",
-        "User Email/Username",
-        "Account/Sold-To Number",
-        "Product/Style Number(s)",
-        "Order Number",
-        "Description (details & steps to reproduce)",
-        "Season (if applicable)",
-        "Error Message",
-        "Attachment/Screenshot",
-        "Cart ID or Coupon Code (if applicable)",
-        "Date/Time of Issue"
-      ],
-      futuresWeb: [
-        "Short Description",
-        "Nike.net User Email/Username",
-        "Sold-To/Account Number",
-        "Order Number",
-        "Product/Style Numbers",
-        "Season",
-        "PO Number (if relevant)",
-        "Description (details & steps to reproduce)",
-        "Error Messages/Logs (if applicable)",
-        "Date/Time of Issue",
-        "Additional Context Info (e.g. cart id, replication steps)"
-      ],
-      manageApla: [
-        "Short Description",
-        "User Email/Username",
-        "Sold-To/Account Number",
-        "Season",
-        "Product Codes/SKUs",
-        "Order Number/PO Number (if related)",
-        "Description/Supporting Details (steps, expected vs actual)",
-        "Invoice/Billing Info (if applicable)",
-        "Country/Region",
-        "Date/Time of Issue or related transaction",
-        "Attachments/Screenshots (optional but helpful)"
-      ],
-      manageNa: [
-        "Short Description",
-        "Account Number/Sold-To Code",
-        "Order Number(s)",
-        "User Email/Username",
-        "Product Codes/Style Numbers",
-        "Description Details (problem description, steps to reproduce)",
-        "Date/Time of Affected Order/Transaction",
-        "Issue Type (e.g., negative units showing, missing orders)",
-        "Error Messages or Screenshot Attachments (if relevant)",
-        "Season/CRD (if related to orders or product availability)",
-        "Sold To and Ship To Codes",
-        "Contract Number or Period (if related to contract issues)"
-      ]
-    };
+<script>
+  const appDescriptions = {
+    order: "Order Booking manages the creation, amendment, and tracking of purchase orders or sales. Use this for booking, confirmation, error, or missing order issues.",
+    invoice: "Invoice generation, download, bill matching, payment status, and credit note requests. Use for invoice issues, mismatches, failed downloads, etc.",
+    store: "Store Management covers store on-boarding, closures, configuration, POS integration, etc.",
+    inventory: "Real-time product stock, replenishment, allocation, and inventory sync logic, including API or manual updates.",
+    delivery: "Order fulfillment, shipment, tracking, scheduling, and last-mile logistics, for all delivery-related issues.",
+    returns: "Workflow for customer/product returns, reverse pickups, refund approvals, etc.",
+    payment: "Gateway status, transaction errors, refunds, reconciliation, or failed payment/duplicate charge queries.",
+    catalog: "Product catalog maintenance, item creation, category sync, attribute management, and content publishing.",
+    support: "Customer queries, complaint escalation, agent assignments, chat/call experience, and support ticketing.",
+    analytics: "Data/report download, dashboard loading, metrics discrepancy, API exports, and scheduled reports.",
+    loyalty: "Points accrual, redemption, tier status, campaign logic, and rewards fulfillment."
+  };
 
-    // Keywords to match description content to specific fields (per app); simplified example
-    const appFieldKeywords = {
-      paoProd: {
-        "sold-to": ["Sold-To Code"],
-        "season": ["Season"],
-        "country": ["Country/Region"],
-        "product": ["Product Codes"],
-        "error": ["Error Message (if any)"],
-        "business": ["Business Justification"],
-        "screenshot": ["Screenshot/Attachment (optional but recommended)"],
-        "email": ["User Email/Username"]
-      },
-      atOnce: {
-        "account": ["Account/Sold-To Number"],
-        "product": ["Product/Style Number(s)"],
-        "order": ["Order Number"],
-        "season": ["Season (if applicable)"],
-        "error": ["Error Message"],
-        "cart": ["Cart ID or Coupon Code (if applicable)"],
-        "attachment": ["Attachment/Screenshot"],
-        "date": ["Date/Time of Issue"],
-        "email": ["User Email/Username"]
-      },
-      futuresWeb: {
-        "order": ["Order Number"],
-        "product": ["Product/Style Numbers"],
-        "season": ["Season"],
-        "po": ["PO Number (if relevant)"],
-        "error": ["Error Messages/Logs (if applicable)"],
-        "cart": ["Additional Context Info (e.g. cart id, replication steps)"],
-        "email": ["Nike.net User Email/Username"],
-        "date": ["Date/Time of Issue"]
-      },
-      manageApla: {
-        "sold-to": ["Sold-To/Account Number"],
-        "season": ["Season"],
-        "product": ["Product Codes/SKUs"],
-        "order": ["Order Number/PO Number (if related)"],
-        "country": ["Country/Region"],
-        "invoice": ["Invoice/Billing Info (if applicable)"],
-        "attachment": ["Attachments/Screenshots (optional but helpful)"],
-        "email": ["User Email/Username"],
-        "date": ["Date/Time of Issue or related transaction"]
-      },
-      manageNa: {
-        "account": ["Account Number/Sold-To Code"],
-        "order": ["Order Number(s)"],
-        "product": ["Product Codes/Style Numbers"],
-        "email": ["User Email/Username"],
-        "issue": ["Issue Type (e.g., negative units showing, missing orders)"],
-        "error": ["Error Messages or Screenshot Attachments (if relevant)"],
-        "season": ["Season/CRD (if related to orders or product availability)"],
-        "contract": ["Contract Number or Period (if related to contract issues)"]
+  const baselineFields = {
+    order: [
+      "User Email", "Order ID", "Account/Customer ID", "Product SKU(s)", "Order Date", "Channel (Web/App/Store)",
+      "Booked Quantity", "Order Status", "Payment Mode", "Error Message (if any)", "Business Impact",
+      "Assigned Sales Rep", "Attachment / Screenshot"
+    ],
+    invoice: [
+      "User Email", "Invoice Number", "Order ID", "Customer/Account ID", "Billing Date", "Invoice Amount",
+      "Invoice Status", "Download/Access Mode", "Payment Reference", "Credit Applied (Y/N)", "Error Message", "Attachment / Screenshot"
+    ],
+    store: [
+      "User Email", "Store ID", "Store Name", "Region/Location", "Request Type (Add/Update/Close)", "POS ID/Integration",
+      "Manager Contact", "Effective Date", "Issue Category", "Error Message (if any)", "Attachment / Screenshot"
+    ],
+    inventory: [
+      "User Email", "Product SKU(s)", "Warehouse/Location", "Reported Stock", "Threshold Alert (Y/N)", "Update Mode (API/Manual)",
+      "Request Date/Time", "Error Message", "Attachment / Screenshot"
+    ],
+    delivery: [
+      "User Email", "Delivery ID", "Order ID", "Courier Partner", "Pickup/Dropoff Address", "Planned Date",
+      "Actual Delivery Date", "Tracking Link/Status", "Delivery Status", "Recipient Contact", "Error Message", "Attachment / Screenshot"
+    ],
+    returns: [
+      "User Email", "Return ID", "Order ID", "Product SKU(s)", "Reason for Return", "Return Type (Pickup/Drop)",
+      "Status", "Refund Amount", "Refund Status", "Request Date", "Error Message", "Attachment / Screenshot"
+    ],
+    payment: [
+      "User Email", "Payment ID", "Order ID", "Account ID", "Transaction Amount", "Payment Date","Payment Channel",
+      "Gateway Reference", "Transaction Status", "Refund (Y/N)", "Error Message", "Attachment / Screenshot"
+    ],
+    catalog: [
+      "User Email", "Product SKU", "Product Name", "Category", "Attribute(s) in Question", "Batch/Upload Date",
+      "Approval Status", "Issue Type", "Error Message", "Attachment / Screenshot"
+    ],
+    support: [
+      "User Email", "Support Ticket ID", "Customer ID", "Contact Channel (Chat/Call/Email)", "Complaint Type",
+      "Priority", "Issue Summary", "Agent Name", "Date/Time of Issue", "Resolution Status", "Error Message (if any)", "Attachment / Screenshot"
+    ],
+    analytics: [
+      "User Email", "Report Name/ID", "Dashboard/Page", "Metric(s) in Question", "Frequency (Adhoc/Scheduled)",
+      "Report Date/Time", "Download Method (CSV/XLS/API)", "Error Message", "Attachment / Screenshot"
+    ],
+    loyalty: [
+      "User Email", "Loyalty ID", "Customer ID", "Tier Status", "Points Involved", "Campaign/Event Name",
+      "Redemption Status", "Requested Reward", "Request Date", "Error Message", "Attachment / Screenshot"
+    ]
+  };
+
+  const keywordsToFields = {
+    order: {
+      "customer": ["Account/Customer ID"], "order": ["Order ID", "Order Date", "Order Status"], "sku": ["Product SKU(s)"],
+      "product": ["Product SKU(s)"], "web": ["Channel (Web/App/Store)"], "app": ["Channel (Web/App/Store)"], 
+      "store": ["Channel (Web/App/Store)"], "quantity": ["Booked Quantity"], "sales": ["Assigned Sales Rep"],
+      "payment": ["Payment Mode"], "status": ["Order Status"], "error": ["Error Message (if any)"], "impact": ["Business Impact"]
+    },
+    invoice: {
+      "invoice": ["Invoice Number", "Invoice Amount", "Invoice Status", "Billing Date"], "order": ["Order ID"],
+      "customer": ["Customer/Account ID"], "amount": ["Invoice Amount"], "date": ["Billing Date"], "payment": ["Payment Reference"],
+      "credit": ["Credit Applied (Y/N)"], "download": ["Download/Access Mode"], "error": ["Error Message"]
+    },
+    store: {
+      "store": ["Store ID", "Store Name"], "region": ["Region/Location"], "location": ["Region/Location"],
+      "manager": ["Manager Contact"], "date": ["Effective Date"], "request": ["Request Type (Add/Update/Close)"],
+      "pos": ["POS ID/Integration"], "category": ["Issue Category"], "error": ["Error Message (if any)"]
+    },
+    inventory: {
+      "warehouse": ["Warehouse/Location"], "stock": ["Reported Stock"], "sku": ["Product SKU(s)"],
+      "product": ["Product SKU(s)"], "api": ["Update Mode (API/Manual)"], "manual": ["Update Mode (API/Manual)"],
+      "date": ["Request Date/Time"], "threshold": ["Threshold Alert (Y/N)"], "error": ["Error Message"]
+    },
+    delivery: {
+      "delivery": ["Delivery ID", "Delivery Status"], "order": ["Order ID"], "courier": ["Courier Partner"],
+      "pickup": ["Pickup/Dropoff Address"], "dropoff": ["Pickup/Dropoff Address"], "planned": ["Planned Date"],
+      "actual": ["Actual Delivery Date"], "tracking": ["Tracking Link/Status"], "recipient": ["Recipient Contact"],
+      "status": ["Delivery Status"], "error": ["Error Message"]
+    },
+    returns: {
+      "return": ["Return ID", "Reason for Return", "Return Type (Pickup/Drop)", "Status"], "order": ["Order ID"],
+      "sku": ["Product SKU(s)"], "product": ["Product SKU(s)"], "refund": ["Refund Amount", "Refund Status"],
+      "date": ["Request Date"], "status": ["Status", "Refund Status"], "error": ["Error Message"]
+    },
+    payment: {
+      "payment": ["Payment ID", "Payment Date", "Payment Channel", "Payment Mode"], "order": ["Order ID"], "account": ["Account ID"],
+      "transaction": ["Transaction Amount", "Transaction Status"], "gateway": ["Gateway Reference"],
+      "refund": ["Refund (Y/N)"], "status": ["Transaction Status"], "error": ["Error Message"]
+    },
+    catalog: {
+      "sku": ["Product SKU"], "product": ["Product Name"], "category": ["Category"], "attribute": ["Attribute(s) in Question"],
+      "date": ["Batch/Upload Date"], "approval": ["Approval Status"], "type": ["Issue Type"], "error": ["Error Message"]
+    },
+    support: {
+      "support": ["Support Ticket ID"], "customer": ["Customer ID"], "channel": ["Contact Channel (Chat/Call/Email)"],
+      "type": ["Complaint Type"], "priority": ["Priority"], "summary": ["Issue Summary"], "agent": ["Agent Name"],
+      "date": ["Date/Time of Issue"], "resolution": ["Resolution Status"], "error": ["Error Message (if any)"]
+    },
+    analytics: {
+      "report": ["Report Name/ID", "Report Date/Time"], "dashboard": ["Dashboard/Page"], "metric": ["Metric(s) in Question"],
+      "frequency": ["Frequency (Adhoc/Scheduled)"], "download": ["Download Method (CSV/XLS/API)"], "date": ["Report Date/Time"], "error": ["Error Message"]
+    },
+    loyalty: {
+      "loyalty": ["Loyalty ID"], "customer": ["Customer ID"], "tier": ["Tier Status"], "points": ["Points Involved"],
+      "campaign": ["Campaign/Event Name"], "event": ["Campaign/Event Name"], "status": ["Redemption Status"],
+      "reward": ["Requested Reward"], "date": ["Request Date"], "error": ["Error Message"]
+    }
+  };
+
+  const appSelect = document.getElementById("app-select");
+  const appDescDiv = document.getElementById("app-desc");
+  const shortDescInput = document.getElementById("short-desc");
+  const btnSuggest = document.getElementById("btn-suggest");
+  const mandatoryFieldsDiv = document.getElementById("mandatory-fields");
+  const expandedDesc = document.getElementById("expanded-description");
+  const attachmentSection = document.getElementById("attachment-section");
+  const submitBtn = document.getElementById("submit-btn");
+  const formStatus = document.getElementById("form-status");
+
+  function normalize(text) {
+    return String(text).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  }
+
+  function analyzeDescriptionFields(appKey, description) {
+    const baseFields = baselineFields[appKey] || [];
+    const keywordMap = keywordsToFields[appKey] || {};
+    const descNorm = normalize(description);
+
+    const matchedFields = [];
+    baseFields.forEach(field => {
+      const keywordsForField = Object.entries(keywordMap)
+        .filter(([k, v]) => v.includes(field))
+        .map(([k]) => k);
+      const isMatched = keywordsForField.some(kw => descNorm.includes(kw));
+      if (isMatched) {
+        matchedFields.push(field);
       }
-    };
+    });
 
-    function getNecessaryFields(appKey, description) {
-      const descLower = description.toLowerCase();
+    const attachments = baseFields.filter(f => /screenshot|attachment/i.test(f));
+    const missingFields = baseFields.filter(f => !matchedFields.includes(f) && !attachments.includes(f));
+    return { matchedFields, missingFields, attachments };
+  }
 
-      if (!descLower) return [];
+  appSelect.addEventListener("change", () => {
+    const val = appSelect.value;
+    if (val && appDescriptions[val]) {
+      appDescDiv.style.display = "block";
+      appDescDiv.textContent = appDescriptions[val];
+    } else {
+      appDescDiv.style.display = "none";
+      appDescDiv.textContent = "";
+    }
+    mandatoryFieldsDiv.innerHTML = "";
+    expandedDesc.value = "";
+    attachmentSection.style.display = "none";
+    formStatus.textContent = "";
+  });
 
-      const keywordsMap = appFieldKeywords[appKey] || {};
-      const necessaryFieldsSet = new Set();
+  btnSuggest.addEventListener("click", () => {
+    mandatoryFieldsDiv.innerHTML = "";
+    expandedDesc.value = "";
+    attachmentSection.style.display = "none";
+    formStatus.textContent = "";
 
-      // Always include "Short Description"
-      necessaryFieldsSet.add("Short Description");
+    const app = appSelect.value;
+    const desc = shortDescInput.value.trim();
 
-      // Simple keyword matching in description to include fields
-      for (const [keyword, fields] of Object.entries(keywordsMap)) {
-        if (descLower.includes(keyword)) {
-          fields.forEach(f => necessaryFieldsSet.add(f));
-        }
-      }
-
-      // If only Short Description found, add minimal base fields to help
-      if (necessaryFieldsSet.size === 1) {
-        // Add couple of base mandatory fields from baseline (excluding Short Description)
-        const baseFields = baselineFields[appKey] || [];
-        baseFields.forEach(field => {
-          if (field !== "Short Description") necessaryFieldsSet.add(field);
-        });
-      }
-
-      return Array.from(necessaryFieldsSet);
+    if (!app) {
+      mandatoryFieldsDiv.innerHTML = '<span class="error">Please select an application.</span>';
+      return;
+    }
+    if (!desc) {
+      mandatoryFieldsDiv.innerHTML = '<span class="error">Please enter a short description.</span>';
+      return;
     }
 
-    const appNames = {
-      paoProd: "Prepare Account Offering (PAO) Prod",
-      atOnce: "E-Commerce Order - At Once",
-      futuresWeb: "E-Commerce Order - Futures Web",
-      manageApla: "E-Commerce Manage - Order Status (APLA/EMEA)",
-      manageNa: "E-Commerce Manage - Order Status (NA/GC)"
-    };
+    const { matchedFields, missingFields, attachments } = analyzeDescriptionFields(app, desc);
 
-    document.getElementById("suggest-btn").addEventListener("click", () => {
-      const appSelect = document.getElementById("application-select");
-      const descInput = document.getElementById("description-input");
-      const output = document.getElementById("output");
+    function renderFields(title, fields, preChecked=false) {
+      if (!fields.length) return;
+      const titleElem = document.createElement("h4");
+      titleElem.textContent = title;
+      mandatoryFieldsDiv.appendChild(titleElem);
+      fields.forEach(field => {
+        const fieldId = `cb-${field.replace(/\s+/g, '-').toLowerCase()}`;
+        const div = document.createElement("div");
+        div.className = "field-checkbox";
 
-      const appKey = appSelect.value;
-      const description = descInput.value.trim();
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = fieldId;
+        checkbox.name = "mandatoryField";
+        checkbox.value = field;
+        if(preChecked) checkbox.checked = true;
 
-      if (!appKey) {
-        output.innerHTML = "<span style='color:#c00'>Please select an application first.</span>";
-        return;
+        const label = document.createElement("label");
+        label.htmlFor = fieldId;
+        label.textContent = field;
+
+        div.appendChild(checkbox);
+        div.appendChild(label);
+        mandatoryFieldsDiv.appendChild(div);
+
+        // Add event listener to sync checked fields with detailed description
+        checkbox.addEventListener("change", () => {
+          syncDescriptionWithCheckboxes();
+        });
+      });
+    }
+
+    renderFields("Fields Mentioned in Your Description:", matchedFields, true);
+    renderFields("Other Recommended Mandatory Fields:", missingFields, false);
+
+    if (attachments.length) attachmentSection.style.display = "block";
+    else attachmentSection.style.display = "none";
+
+    // Initialize detailed description with matched fields checked
+    syncDescriptionWithCheckboxes();
+  });
+
+  // Function to add/remove fields in Detailed Description area according to checkboxes
+  function syncDescriptionWithCheckboxes() {
+    const checkedBoxes = document.querySelectorAll('#mandatory-fields input[type="checkbox"]:checked');
+    let descLines = expandedDesc.value.trim().split('\n').filter(line => !line.match(/:$/)); // Remove old field headers
+    descLines = descLines.filter(l => l.trim() !== ""); // clean empty lines
+    // We'll keep user added lines except those starting with field names (to avoid duplication)
+    // To keep lines user typed, we only remove lines that are field headers (lines that end with :)
+    let newDesc = '';
+    checkedBoxes.forEach(cb => {
+      const fieldHeader = cb.value + ':';
+      // Add field header if not present yet:
+      const pattern = new RegExp('^' + cb.value.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') + ':$', 'm');
+      if (!pattern.test(expandedDesc.value)) {
+        newDesc += fieldHeader + '\n\n';
       }
-      if (!description) {
-        output.innerHTML = "<span style='color:#c00'>Please enter a short description.</span>";
-        return;
-      }
-
-      const necessaryFields = getNecessaryFields(appKey, description);
-
-      output.innerHTML = `<strong>Necessary Fields for <span style="color:#008dc6;">${appNames[appKey]}</span> based on your description:</strong><ul>`
-        + necessaryFields.map(field => `<li>${field}</li>`).join('') +
-        `</ul>
-        <div style="margin-top:12px; font-size: 13px; color: #228B22;">
-          Please make sure to fill these fields completely before submitting your ticket for quicker resolution.
-        </div>`;
     });
-  </script>
+    // Add non-header existing text lines after new headers, preserving user data
+    expandedDesc.value = newDesc;
+  }
+
+  document.getElementById("long-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    formStatus.textContent = "";
+    const checkedFields = Array.from(mandatoryFieldsDiv.querySelectorAll("input[type='checkbox']:checked"))
+      .map(cb => cb.value);
+    const uncheckedFields = Array.from(mandatoryFieldsDiv.querySelectorAll("input[type='checkbox']"))
+      .filter(cb => !cb.checked)
+      .map(cb => cb.value);
+    let message = "Ticket submitted successfully.\n\n";
+    message += "Fields you have acknowledged:\n";
+    message += checkedFields.length ? checkedFields.map(f => "- "+f).join("\n") : " None\n";
+    message += "\nRecommended but not acknowledged:\n";
+    message += uncheckedFields.length ? uncheckedFields.map(f => "- "+f).join("\n") : " None\n";
+    formStatus.textContent = message;
+    formStatus.className = "info";
+  });
+</script>
 </body>
 </html>
