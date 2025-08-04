@@ -304,24 +304,49 @@
     syncDescriptionWithCheckboxes();
   });
 
-  // Function to add/remove fields in Detailed Description area according to checkboxes
+  // Improved function to sync checkboxes with description preserving user input
   function syncDescriptionWithCheckboxes() {
-    const checkedBoxes = document.querySelectorAll('#mandatory-fields input[type="checkbox"]:checked');
-    let descLines = expandedDesc.value.trim().split('\n').filter(line => !line.match(/:$/)); // Remove old field headers
-    descLines = descLines.filter(l => l.trim() !== ""); // clean empty lines
-    // We'll keep user added lines except those starting with field names (to avoid duplication)
-    // To keep lines user typed, we only remove lines that are field headers (lines that end with :)
-    let newDesc = '';
-    checkedBoxes.forEach(cb => {
-      const fieldHeader = cb.value + ':';
-      // Add field header if not present yet:
-      const pattern = new RegExp('^' + cb.value.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') + ':$', 'm');
-      if (!pattern.test(expandedDesc.value)) {
-        newDesc += fieldHeader + '\n\n';
+    let text = expandedDesc.value;
+
+    // Split text into sections by headers ending in ":"
+    const sections = [];
+    const lines = text.split('\n');
+    let currentSection = {header: null, content: []};
+    for(let line of lines) {
+      if(line.trim().endsWith(':')) {
+        if(currentSection.header !== null) {
+          sections.push(currentSection);
+        }
+        currentSection = {header: line.trim().slice(0, -1), content: []};
+      } else {
+        currentSection.content.push(line);
+      }
+    }
+    if(currentSection.header !== null) {
+      sections.push(currentSection);
+    }
+
+    const checkedFields = new Set([...document.querySelectorAll('#mandatory-fields input[type="checkbox"]:checked')].map(cb => cb.value));
+    // Build new sections: keep only checked fields
+    const newSections = [];
+    checkedFields.forEach(field => {
+      const found = sections.find(s => s.header === field);
+      if(found) {
+        newSections.push({header: field, content: found.content});
+      } else {
+        newSections.push({header: field, content: [""]});
       }
     });
-    // Add non-header existing text lines after new headers, preserving user data
-    expandedDesc.value = newDesc;
+
+    // Rebuild text 
+    let newText = "";
+    newSections.forEach(section => {
+      newText += section.header + ":\n";
+      const content = section.content.join('\n').replace(/\s+$/,'');
+      newText += content + "\n\n";
+    });
+
+    expandedDesc.value = newText.trimEnd();
   }
 
   document.getElementById("long-form").addEventListener("submit", function(e) {
