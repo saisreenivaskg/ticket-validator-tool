@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Colorful Vertical Ticket Assistant</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(180deg, #f0f8ff, #e6f7ff);
+    margin: 0;
+    padding: 0;
+    color: #2a3a62;
+  }
+  .container {
+    max-width: 750px;  /* narrower width */
+    margin: 20px auto;
+    background: #ffffff;
+    padding: 20px 28px;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+  }
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    background: linear-gradient(90deg, #0d88ff, #00bfa6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-align: center;
+  }
+  label {
+    font-weight: 600;
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 3px;
+    color: #004d66;
+  }
+  .mandatory::after { content: " *"; color: red; }
+  select, textarea, input[type=text] {
+    width: 100%;
+    padding: 7px 9px;
+    border-radius: 6px;
+    border: 1px solid #99c2ff;
+    font-size: 0.97rem;
+    margin-top: 0;
+    background: #f9fcff;
+    transition: all 0.2s ease;
+  }
+  select:focus, textarea:focus, input:focus {
+    border-color: #00bfa6;
+    box-shadow: 0 0 0 2px rgba(0,191,166,0.2);
+    background: #f2fffc;
+    outline: none;
+  }
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+  .form-row {
+    display: flex;
+    flex-direction: column; /* stack vertically */
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .form-col { flex: 1; }
+  .mandatory-list {
+    background: #f0f5ff;
+    border: 1px solid #99c2ff;
+    border-radius: 6px;
+    margin-top: 12px;
+    padding: 8px;
+  }
+  .mandatory-list h4 {
+    margin: 4px 0 8px;
+    border-bottom: 1px solid #a1b3f7;
+    padding-bottom: 2px;
+    color: #003366;
+  }
+  .field-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .matched {
+    background: #d4edda;
+    color: #155724;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  .missing {
+    background: #fff3cd;
+    color: #856404;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  button {
+    margin-top: 14px;
+    padding: 9px 15px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(90deg,#00bfa6,#0d88ff);
+    color: #fff;
+    font-size: 0.97rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: linear-gradient(90deg,#0d88ff,#00bfa6);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>NEW INCIDENT</h1>
+
+  <!-- Top section -->
+  <div class="form-row">
+    <div class="form-col">
+      <label class="mandatory">Incident Number</label>
+      <input type="text" value="INC0012345" readonly>
+    </div>
+    <div class="form-col">
+      <label class="mandatory" for="assignment-group">Assignment Group</label>
+      <select id="assignment-group">
+        <option value="">-- Select --</option>
+        <option>IT Support</option><option>Network Team</option>
+        <option>E-commerce Support</option><option>Logistics</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Dynamic assistant -->
+  <label for="app-select" class="mandatory" style="margin-top:15px;">Select Support Application</label>
+  <select id="app-select"><option value="">-- Select Application --</option></select>
+  <div id="app-desc" style="margin-top:4px;color:#50647a;display:none;"></div>
+
+  <label for="short-desc" class="mandatory">Short Description</label>
+  <textarea id="short-desc" placeholder="Type issue..."></textarea>
+
+  <div id="mandatory-fields" class="mandatory-list"></div>
+
+  <label for="expanded-description" class="mandatory">Detailed Description</label>
+  <textarea id="expanded-description"></textarea>
+
+  <button id="submit-btn">Submit Incident</button>
+</div>
+
+<script>
+// === FULL apps dataset ===
+const apps = {
+  order_status:{name:"Order Status",description:"Track orders, shipments, delivery delays and updates.",fields:["User Email","Order Number","Order Date","Order Status","Shipping Carrier","Tracking Number","Expected Delivery Date","Delivery Status","Customer Phone","Attachment"],fieldKeywords:{"User Email":["user email","email address","e-mail","email","gmail","mail"],"Order Number":["order number","order id","order no","order"],"Order Date":["order date","placed on","date"],"Order Status":["order status","status"],"Shipping Carrier":["shipping carrier","courier","shipping partner","shipping"],"Tracking Number":["tracking number","tracking id","track number","track","tracking"],"Expected Delivery Date":["expected delivery date","delivery date","eta"],"Delivery Status":["delivery status","status"],"Customer Phone":["customer phone","contact number","mobile number"],"Attachment":["attachment","supporting document","screenshot","photo","proof"]}},
+  returns:{name:"Returns & Refunds",description:"Return requests, refunds, and replacements.",fields:["User Email","Return ID","Order ID","Purchase Date","Reason for Return","Refund Status","Return Type","Customer Phone","Product Condition","Attachment"],fieldKeywords:{"User Email":["user email","email address","email","gmail","mail"],"Return ID":["return id","return number","rma number","returns","return"],"Order ID":["order id","order number","order"],"Purchase Date":["purchase date","bought on","date"],"Reason for Return":["reason for return","return reason","exchange reason"],"Refund Status":["refund status","refund not received","refund"],"Return Type":["return type","exchange","replacement","returns","return"],"Customer Phone":["customer phone","contact number","contact"],"Product Condition":["product condition","item damaged","defective"],"Attachment":["attachment","photo","proof","supporting document","screenshot"]}},
+  payment:{name:"Payments",description:"Payment failures, errors, disputes.",fields:["User Email","Payment ID","Order ID","Amount","Currency","Payment Method","Payment Status","Transaction Date","Customer Phone","Attachment"],fieldKeywords:{"User Email":["user email","email address","gmail","mail","email"],"Payment ID":["payment id","transaction id","pay","payment"],"Order ID":["order id","order number","order"],"Amount":["amount","total amount","payment amount"],"Currency":["currency","usd","eur","inr","money"],"Payment Method":["payment method","card","upi","netbanking","paypal","pay","payment"],"Payment Status":["payment status","paid","unpaid","pending","payment","pay"],"Transaction Date":["transaction date","payment date","transaction"],"Customer Phone":["customer phone","contact number","contact"],"Attachment":["attachment","photo","proof","supporting document","screenshot"]}},
+  inventory:{name:"Inventory",description:"Stock, SKU mismatch, sync errors.",fields:["User Email","Product SKU","Product Name","Warehouse ID","Warehouse Location","Stock Level","Reorder Level","Sync Status","Last Updated Date","Attachment"],fieldKeywords:{"User Email":["user email","email address","emial","mail","gmail"],"Product SKU":["product sku","sku code","item code","product"],"Product Name":["product name","item name","product"],"Warehouse ID":["warehouse id","warehouse code","warehouse"],"Warehouse Location":["warehouse location","storage location","warehouse"],"Stock Level":["stock level","inventory level","quantity"],"Reorder Level":["reorder level","reorder threshold"],"Sync Status":["sync status","synchronization issue","sync"],"Last Updated Date":["last updated","update date","date"],"Attachment":["attachment","photo","proof","supporting document","screenshot"]}},
+  invoice:{name:"Invoicing",description:"Invoice, billing queries, corrections.",fields:["User Email","Invoice Number","Order ID","Billing Date","Due Date","Amount Due","Tax Amount","Invoice Status","Billing Address","Attachment"],fieldKeywords:{"User Email":["user email","email address","gmail","email","mail"],"Invoice Number":["invoice number","invoice id","invoice","invoices"],"Order ID":["order id","order number","order","orders"],"Billing Date":["billing date","invoice date"],"Due Date":["due date","payment due"],"Amount Due":["amount due","total due"],"Tax Amount":["tax amount","gst","vat"],"Invoice Status":["invoice status","paid","unpaid","invoices","invoice"],"Billing Address":["billing address","invoice address","address"],"Attachment":["attachment","bill copy","invoice file"]}},
+  delivery:{name:"Delivery & Logistics",description:"Delivery delays, wrong address, courier issues.",fields:["User Email","Order ID","Courier","Tracking Number","Delivery Date","Delivery Status","Recipient Name","Recipient Phone","Delivery Address","Attachment"],fieldKeywords:{"User Email":["user email","email address"],"Order ID":["order id","order number"],"Courier":["courier name","delivery agent","shipping partner"],"Tracking Number":["tracking number","tracking id"],"Delivery Date":["delivery date","expected delivery date"],"Delivery Status":["delivery status","not delivered"],"Recipient Name":["recipient name","customer name"],"Recipient Phone":["recipient phone","contact phone"],"Delivery Address":["delivery address","address delivered"],"Attachment":["attachment","delivery proof"]}},
+  promotions:{name:"Promotions & Coupons",description:"Discount not applied, promo errors.",fields:["User Email","Promo Code","Order ID","Discount Expected","Actual Price","Promo Expiry Date","Campaign Name","Error Message","Customer Phone","Attachment"],fieldKeywords:{"User Email":["user email","email address"],"Promo Code":["promo code","coupon code"],"Order ID":["order id","order number"],"Discount Expected":["discount expected","expected discount"],"Actual Price":["actual price","charged amount"],"Promo Expiry Date":["promo expiry date","expiry"],"Campaign Name":["campaign name"],"Error Message":["error message","invalid code"],"Customer Phone":["customer phone","contact number"],"Attachment":["attachment","offer screenshot"]}},
+  catalog:{name:"Product Catalog",description:"Missing product data, incorrect images.",fields:["User Email","Product SKU","Product Name","Category","Subcategory","Image URL","Description Issues","Price","Error Message","Attachment"],fieldKeywords:{"User Email":["user email","email address"],"Product SKU":["product sku","sku code"],"Product Name":["product name","item name"],"Category":["category"],"Subcategory":["subcategory"],"Image URL":["image url","product image"],"Description Issues":["description issue","wrong description"],"Price":["product price","pricing"],"Error Message":["error message"],"Attachment":["attachment","product image file"]}},
+  analytics:{name:"Reports & Analytics",description:"Report errors, metrics mismatch.",fields:["User Email","Report ID","Report Name","Metric","Scheduled Time","Export Format","Date Range","Chart Type","Error Description","Attachment"],fieldKeywords:{"User Email":["user email","email address"],"Report ID":["report id","report number"],"Report Name":["report name","dashboard"],"Metric":["metric","reported value"],"Scheduled Time":["scheduled time","run time"],"Export Format":["export format","pdf","csv"],"Date Range":["date range"],"Chart Type":["chart type"],"Error Description":["error description"],"Attachment":["attachment"]}},
+  api_integration:{name:"API Integration",description:"Integration failures, webhook errors.",fields:["User Email","API Name","Endpoint","Error Code","Request Payload","Response Code","Attachment"],fieldKeywords:{"User Email":["user email","email address"],"API Name":["api name","integration name"],"Endpoint":["api endpoint","webhook url"],"Error Code":["error code","status code"],"Request Payload":["request payload"],"Response Code":["response code"],"Attachment":["attachment","log file"]}},
+  customer_support:{name:"Customer Support",description:"Agent issues, wait times, resolutions.",fields:["User Email","Ticket ID","Contact Channel","Agent Name","Complaint Summary","Feedback Score","Attachment"],fieldKeywords:{"User Email":["user email","email address"],"Ticket ID":["ticket id","case number"],"Contact Channel":["contact channel","phone","chat"],"Agent Name":["agent name","support staff"],"Complaint Summary":["complaint summary","issue details"],"Feedback Score":["feedback score","customer rating"],"Attachment":["attachment"]}},
+  store_operations:{name:"Store Operations",description:"Store openings, staff issues, POS problems.",fields:["User Email","Store ID","Store Name","Region","POS System","Manager Contact","Issue Description","Attachment"],fieldKeywords:{"User Email":["user email","email address"],"Store ID":["store id"],"Store Name":["store name"],"Region":["region"],"POS System":["pos system","point of sale"],"Manager Contact":["manager contact"],"Issue Description":["issue description"],"Attachment":["attachment"]}},
+  order_management:{name:"Order Management",description:"Order creation, amendment, cancellation and payments.",fields:["User Email","Order ID","Product SKU","Order Date","Order Status","Payment Status","Quantity","Order Amount","Attachment"],fieldKeywords:{"User Email":["user email","email address"],"Order ID":["order id","order number"],"Product SKU":["product sku","item code"],"Order Date":["order date"],"Order Status":["order status"],"Payment Status":["payment status"],"Quantity":["quantity","qty"],"Order Amount":["order amount","total"],"Attachment":["attachment"]}},
+  technical_support:{name:"Technical Support",description:"Issues with software, hardware, or integrations.",fields:["User Email","System ID","Error Message","Steps to Reproduce","Severity","Device Model","Attachment"],fieldKeywords:{"User Email":["user email","email address"],"System ID":["system id","device id"],"Error Message":["error message"],"Steps to Reproduce":["steps to reproduce","replication steps"],"Severity":["severity"],"Device Model":["device model"],"Attachment":["attachment","error screenshot"]}}
+};
+
+// Populate dropdown
+const appSelect=document.getElementById("app-select"),appDesc=document.getElementById("app-desc"),shortDesc=document.getElementById("short-desc"),mandatoryFields=document.getElementById("mandatory-fields"),expandedDesc=document.getElementById("expanded-description");
+Object.entries(apps).forEach(([k,app])=>{let opt=document.createElement("option");opt.value=k;opt.textContent=app.name;appSelect.appendChild(opt);});
+appSelect.addEventListener("change",()=>{if(appSelect.value){appDesc.style.display="block";appDesc.textContent=apps[appSelect.value].description;mandatoryFields.innerHTML="";expandedDesc.value="";}});
+shortDesc.addEventListener("input",()=>{const sel=appSelect.value;const desc=shortDesc.value.toLowerCase();mandatoryFields.innerHTML="";expandedDesc.value="";if(!sel||!desc)return;const {matched,missing}=suggestFields(sel,desc);renderFieldCheckboxes("Matched Fields:",matched,true,"matched");renderFieldCheckboxes("Other Recommended:",missing,false,"missing");syncDescription();});
+function suggestFields(appKey,desc){const app=apps[appKey],matched=[],missing=[];Object.entries(app.fieldKeywords).forEach(([field,kws])=>{if(kws.some(kw=>desc.includes(kw)))matched.push(field);});app.fields.forEach(f=>{if(!matched.includes(f))missing.push(f);});return {matched,missing};}
+function renderFieldCheckboxes(title,fields,checked,highlightClass){if(!fields.length)return;const h=document.createElement("h4");h.textContent=title;mandatoryFields.appendChild(h);fields.forEach(f=>{const div=document.createElement("div");div.className="field-checkbox";const cb=document.createElement("input");cb.type="checkbox";cb.value=f;cb.checked=checked;cb.dataset.mandatory=checked;const label=document.createElement("label");label.textContent=f;if(highlightClass)label.classList.add(highlightClass);if(checked)label.classList.add("mandatory");cb.addEventListener("change",syncDescription);div.appendChild(cb);div.appendChild(label);mandatoryFields.appendChild(div);});}
+function syncDescription(){const checked=Array.from(mandatoryFields.querySelectorAll("input[type=checkbox]:checked")).map(cb=>cb.value);let out="";checked.forEach(f=>{out+=f+":\n\n";});expandedDesc.value=out.trim();}
+document.getElementById("submit-btn").addEventListener("click",()=>{let missingReq=[];if(!appSelect.value)missingReq.push("Support Application");if(!shortDesc.value.trim())missingReq.push("Short Description");Array.from(mandatoryFields.querySelectorAll("input[data-mandatory='true']")).forEach(cb=>{if(!cb.checked)missingReq.push(cb.value);});if(!expandedDesc.value.trim())missingReq.push("Detailed Description");if(missingReq.length>0){alert("Please complete before submitting:\n- "+missingReq.join("\n- "));}else{alert("✅ Incident ready — in SNOW this would create the record.");}});
+</script>
+</body>
+</html>
